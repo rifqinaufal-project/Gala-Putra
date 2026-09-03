@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeActionError, requireApprovedUser, requireRole } from "@/lib/security/auth";
 import type { Product, ProductStatus } from "@/types";
+import { normalizeProductUnit } from "@/lib/domain/inventory";
 
 export interface ProductOption {
   id: string;
@@ -35,7 +36,7 @@ export async function createProductAction(payload: CreateProductPayload) {
   const invalid = validate(payload); if (invalid) return { error: invalid };
   try {
     await requireRole(["OWNER", "FINANCE"]); const supabase = await createClient();
-    const { data, error } = await supabase.from("products").insert({ sku: payload.sku?.trim() || null, name: payload.name.trim(), category: payload.category.trim(), size: payload.size?.trim() || null, default_unit: payload.defaultUnit.trim(), default_selling_price: payload.defaultSellingPrice ?? 0, status: "ACTIVE" }).select("id").single();
+    const { data, error } = await supabase.from("products").insert({ sku: payload.sku?.trim() || null, name: payload.name.trim(), category: payload.category.trim(), size: payload.size?.trim() || null, default_unit: normalizeProductUnit(payload.defaultUnit), default_selling_price: payload.defaultSellingPrice ?? 0, status: "ACTIVE" }).select("id").single();
     if (error) throw error;
     if ((payload.activeCost ?? 0) > 0) {
       const { error: costError } = await supabase.rpc("set_product_average_cost", { p_product_id: data.id, p_supplier_id: null, p_unit_cost: payload.activeCost, p_effective_at: new Date().toISOString(), p_notes: "HPP awal produk" });
@@ -49,7 +50,7 @@ export async function updateProductAction(payload: UpdateProductPayload) {
   const invalid = validate(payload); if (invalid) return { error: invalid };
   try {
     await requireRole(["OWNER", "FINANCE"]); const supabase = await createClient();
-    const { error } = await supabase.from("products").update({ sku: payload.sku?.trim() || null, name: payload.name.trim(), category: payload.category.trim(), size: payload.size?.trim() || null, default_unit: payload.defaultUnit.trim(), default_selling_price: payload.defaultSellingPrice ?? 0, status: payload.status }).eq("id", payload.id);
+    const { error } = await supabase.from("products").update({ sku: payload.sku?.trim() || null, name: payload.name.trim(), category: payload.category.trim(), size: payload.size?.trim() || null, default_unit: normalizeProductUnit(payload.defaultUnit), default_selling_price: payload.defaultSellingPrice ?? 0, status: payload.status }).eq("id", payload.id);
     if (error) throw error;
     revalidatePath("/products"); revalidatePath("/stock"); revalidatePath("/pricing/purchase"); return { success: true, message: "Produk berhasil diperbarui." };
   } catch (error) { return { error: normalizeActionError(error, "Gagal memperbarui produk.") }; }
@@ -135,7 +136,7 @@ export async function getProductsAction(): Promise<Product[]> {
       name: String(product.name),
       category: String(product.category),
       size: product.size ? String(product.size) : undefined,
-      defaultUnit: String(product.default_unit),
+       defaultUnit: normalizeProductUnit(String(product.default_unit)),
       defaultSellingPrice: selling,
       activeCost: user.role === "STAFF" ? undefined : activeCost,
       estimatedMargin: user.role !== "STAFF" && selling > 0 && activeCost > 0 ? Number((((selling - activeCost) / selling) * 100).toFixed(1)) : undefined,
@@ -160,7 +161,7 @@ export async function getProductOptionsAction(): Promise<ProductOption[]> {
     id: product.id,
     name: product.name,
     size: product.size ?? undefined,
-    defaultUnit: product.default_unit,
+     defaultUnit: normalizeProductUnit(product.default_unit),
     status: product.status as ProductStatus,
   }));
 }

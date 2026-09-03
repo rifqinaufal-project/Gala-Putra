@@ -7,7 +7,7 @@ import { calculateInvoice, formatCurrency } from "../lib/utils.ts";
 import { createCsv } from "../lib/csv.ts";
 import { getEffectiveInvoiceStatus, isPublicInvoice, sanitizeInvoiceForRole } from "../lib/domain/invoices.ts";
 import { ROLE_PERMISSIONS, type Invoice } from "../types/index.ts";
-import { calculateMargin, calculateWeightedAverageCost, getStockMovementLabel, getStockStatus, validateStockAdjustment, validateStockReceiptCancellation, validateStockReceiptPayload, validateStockSettings } from "../lib/domain/inventory.ts";
+import { calculateMargin, calculateWeightedAverageCost, getStockMovementLabel, getStockStatus, normalizeProductUnit, validateStockAdjustment, validateStockReceiptCancellation, validateStockReceiptPayload, validateStockSettings } from "../lib/domain/inventory.ts";
 import { normalizeActionError } from "../lib/security/errors.ts";
 
 const invoice: Invoice = {
@@ -34,6 +34,13 @@ test("weight units normalize to kilograms and ton display", () => {
   ]), 1000.5);
   assert.equal(formatWeightKg(1000.5), "1.000,5 kg");
   assert.equal(formatWeightTon(1000.5), "1,001 ton");
+});
+
+test("product weight units use kilograms for canonical load and reject stock", () => {
+  assert.equal(normalizeProductUnit("ton"), "kg");
+  assert.equal(normalizeProductUnit("tons"), "kg");
+  assert.equal(normalizeProductUnit("kg"), "kg");
+  assert.equal(normalizeProductUnit("ekor"), "ekor");
 });
 
 test("factory reconciliation cannot exceed sent weight", () => {

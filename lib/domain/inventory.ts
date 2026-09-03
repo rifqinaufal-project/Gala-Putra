@@ -37,6 +37,11 @@ export function calculateMargin(sellingPrice: number, averageCost: number) {
   return { nominal, percentage: sellingPrice > 0 ? (nominal / sellingPrice) * 100 : 0 };
 }
 
+export function normalizeProductUnit(unit: string): string {
+  const normalized = unit.trim().toLowerCase();
+  return normalized === "ton" || normalized === "tons" || normalized === "tonase" ? "kg" : normalized;
+}
+
 export function getStockStatus(quantity: number, minimumQuantity: number) {
   if (quantity <= 0) return "Habis";
   if (minimumQuantity > 0 && quantity <= minimumQuantity) return "Menipis";

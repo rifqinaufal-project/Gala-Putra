@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeActionError, requireRole } from "@/lib/security/auth";
-import { calculateMargin, getStockStatus, validateStockAdjustment, validateStockReceiptCancellation, validateStockReceiptPayload, validateStockSettings, type StockReceiptInput, type StockSettingsInput } from "@/lib/domain/inventory";
+import { calculateMargin, getStockStatus, normalizeProductUnit, validateStockAdjustment, validateStockReceiptCancellation, validateStockReceiptPayload, validateStockSettings, type StockReceiptInput, type StockSettingsInput } from "@/lib/domain/inventory";
 import type { StockBalance, StockBatch, StockMovement, StockMovementType } from "@/types";
 
 export interface InventorySnapshot {
@@ -64,7 +64,7 @@ export async function getInventoryAction(): Promise<InventorySnapshot> {
       productName: String(product.name ?? "Produk tidak tersedia"),
       sku: product.sku ? String(product.sku) : undefined,
       size: product.size ? String(product.size) : undefined,
-      unit: String(product.default_unit ?? "unit"),
+       unit: normalizeProductUnit(String(product.default_unit ?? "unit")),
       category: product.category ? String(product.category) : "Tanpa kategori",
       productStatus: product.status === "INACTIVE" ? "INACTIVE" : "ACTIVE",
       quantity,

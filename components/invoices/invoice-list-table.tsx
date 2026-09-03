@@ -157,14 +157,19 @@ export function InvoiceListTable({ initialInvoices = [], role, company }: Invoic
             </Link>
           </DropdownMenuItem>
         )}
-        {inv.status !== "DRAFT" && (
+        {inv.status !== "DRAFT" && inv.publicToken ? (
           <DropdownMenuItem>
-            <Link href={`/preview/invoices/${inv.id}`} target="_blank" rel="noopener noreferrer" className="flex w-full items-center">
+            <Link href={`/preview/invoices/${inv.publicToken}`} target="_blank" rel="noopener noreferrer" className="flex w-full items-center">
               <FileText className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
               Lihat Invoice Digital
             </Link>
           </DropdownMenuItem>
-        )}
+        ) : inv.status !== "DRAFT" ? (
+          <DropdownMenuItem disabled>
+            <FileText className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
+            Invoice Digital Belum Tersedia
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuItem onClick={() => handleDownload(inv)} disabled={downloadingId === inv.id} className="cursor-pointer">
           {downloadingId === inv.id ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Download className="mr-2 h-3.5 w-3.5 text-muted-foreground" />}
           {downloadingId === inv.id ? "Menyiapkan PDF..." : "Download PDF"}
