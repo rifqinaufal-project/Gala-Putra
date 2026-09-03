@@ -1,0 +1,339 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Gala Putra ERP — Cool workspace design tokens ─── */
+@theme inline {
+  /* Fonts */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+
+  /* Shadcn color mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Border radius tokens */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+}
+
+/* ─── Light mode (default) ─── */
+:root {
+  /* Surface */
+  --background: #f3f4f6;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --card-foreground: #1c1917;
+  --popover: #ffffff;
+  --popover-foreground: #1c1917;
+  --surface-subtle: #fafafa;
+
+  /* Primary = warm near-black / dark brown */
+  --primary: #1c1917;
+  --primary-foreground: #ffffff;
+
+  /* Secondary = white/outlined */
+  --secondary: #e7e5e4;
+  --secondary-foreground: #292524;
+
+  /* Muted */
+  --muted: #f1f0ef;
+  --muted-foreground: #78716c;
+
+  /* Accent */
+  --accent: #f5f5f4;
+  --accent-foreground: #1c1917;
+
+  /* Destructive */
+  --destructive: #b91c1c;
+
+  /* Border */
+  --border: #e7e5e4;
+  --border-strong: #d6d3d1;
+  --input: #d6d3d1;
+  --ring: #292524;
+
+  /* Radius */
+  --radius: 0.75rem;
+
+  /* Sidebar */
+  --sidebar: #ffffff;
+  --sidebar-hover: #f5f5f4;
+  --sidebar-active: #e7e5e4;
+  --sidebar-foreground: #78716c;
+  --sidebar-primary: #1c1917;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f4;
+  --sidebar-accent-foreground: #1c1917;
+  --sidebar-border: #e7e5e4;
+  --sidebar-ring: #292524;
+
+  /* Text scale */
+  --text-primary: #1c1917;
+  --text-secondary: #57534e;
+  --text-muted: #a8a29e;
+  --text-inverse: #ffffff;
+
+  /* Status colors */
+  --success: #15803d;
+  --success-bg: #ecfdf3;
+  --success-border: #bbf7d0;
+
+  --warning: #b45309;
+  --warning-bg: #fff7ed;
+  --warning-border: #fed7aa;
+
+  --danger: #b91c1c;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+
+  --info: #1d4ed8;
+  --info-bg: #eff6ff;
+  --info-border: #bfdbfe;
+
+  /* Charts */
+  --chart-1: #1c1917;
+  --chart-2: #78716c;
+  --chart-3: #a8a29e;
+  --chart-4: #d6d3d1;
+  --chart-5: #e7e5e4;
+
+  /* Soft neutral shadows */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px -12px rgba(0, 0, 0, 0.08);
+  --shadow-dropdown: 0 16px 40px -16px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Base styles ─── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background-image:
+      linear-gradient(180deg, #fafafa 0%, var(--background) 28rem);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: #d6d3d1;
+    color: #1c1917;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #d6d3d1;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a8a29e;
+  }
+
+  /* Focus ring */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .erp-table-wrap {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable;
+  }
+
+  .erp-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .erp-table thead th {
+    background: #fafaf9;
+    border-bottom: 1px solid var(--border);
+    color: #78716c;
+    font-size: 0.72rem;
+    letter-spacing: 0.015em;
+    line-height: 1.25;
+    text-transform: none;
+  }
+
+  .erp-table tbody tr {
+    transition: background-color 160ms ease;
+  }
+
+  .erp-table tbody tr:hover {
+    background: #fafaf9;
+  }
+
+  .erp-table tbody td {
+    border-bottom: 1px solid #f1f0ef;
+  }
+
+  .erp-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .money {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .erp-surface {
+    border: 1px solid var(--border);
+    border-radius: 1.125rem;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--shadow-card);
+  }
+
+  .erp-section-title {
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+
+  .skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    transform: translateY(-200%);
+    border-radius: 0.625rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.65rem 0.9rem;
+    font-size: 0.8125rem;
+    font-weight: 650;
+    transition: transform 160ms ease;
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+
+  @media (pointer: coarse) {
+    [data-slot="button"], [data-slot="select-trigger"] {
+      min-height: 2.75rem;
+    }
+  }
+}
+
+/* ─── Utility classes ─── */
+@layer utilities {
+  /* Card shadow */
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-dropdown {
+    box-shadow: var(--shadow-dropdown);
+  }
+
+  /* Text tokens */
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+  .text-muted-custom {
+    color: var(--text-muted);
+  }
+
+  /* Status utilities */
+  .text-success { color: var(--success); }
+  .bg-success-subtle { background-color: var(--success-bg); }
+  .border-success { border-color: var(--success-border); }
+
+  .text-warning { color: var(--warning); }
+  .bg-warning-subtle { background-color: var(--warning-bg); }
+
+  .text-danger { color: var(--danger); }
+  .bg-danger-subtle { background-color: var(--danger-bg); }
+
+  .text-info { color: var(--info); }
+  .bg-info-subtle { background-color: var(--info-bg); }
+
+  /* Metric number */
+  .text-metric {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  /* Sidebar utilities */
+  .bg-sidebar { background-color: var(--sidebar); }
+  .bg-sidebar-hover { background-color: var(--sidebar-hover); }
+  .bg-sidebar-active { background-color: var(--sidebar-active); }
+  .text-sidebar { color: var(--sidebar-foreground); }
+  .text-sidebar-primary { color: var(--sidebar-primary); }
+  .border-sidebar { border-color: var(--sidebar-border); }
+
+  /* Smooth transitions */
+  .transition-default {
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}

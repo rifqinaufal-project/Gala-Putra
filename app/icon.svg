@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="fishGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+    <linearGradient id="crownGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Container -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+  
+  <!-- Crown Icon (Sultan) -->
+  <path d="M 180 160 L 210 200 L 256 150 L 302 200 L 332 160 L 320 220 L 192 220 Z" fill="url(#crownGrad)"/>
+  <circle cx="180" cy="155" r="10" fill="#FCD34D"/>
+  <circle cx="256" cy="145" r="12" fill="#FCD34D"/>
+  <circle cx="332" cy="155" r="10" fill="#FCD34D"/>
+
+  <!-- Stylized Seafood Fish -->
+  <path d="M 140 290 C 200 210, 340 220, 380 290 C 340 360, 200 370, 140 290 Z" fill="url(#fishGrad)"/>
+  <!-- Fish Tail -->
+  <path d="M 155 290 L 100 240 L 115 290 L 100 340 Z" fill="url(#fishGrad)"/>
+  <!-- Fish Eye -->
+  <circle cx="330" cy="280" r="14" fill="#FFFFFF"/>
+  <circle cx="334" cy="280" r="7" fill="#0F172A"/>
+  <!-- Wave Accent -->
+  <path d="M 150 375 Q 256 415 362 375" fill="none" stroke="#38BDF8" stroke-width="14" stroke-linecap="round" opacity="0.6"/>
+</svg>

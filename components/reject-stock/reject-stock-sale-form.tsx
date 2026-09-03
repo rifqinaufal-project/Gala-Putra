@@ -1,0 +1,20 @@
+"use client";
+
+import { useState } from "react";
+import { FileText, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { createRejectStockSaleAction } from "@/lib/actions/reject-stock";
+import type { Customer, RejectStockItem } from "@/types";
+import type { WeightUnit } from "@/lib/domain/weights";
+
+export function RejectStockSaleForm({ stock, customers }: { stock: RejectStockItem[]; customers: Customer[] }) {
+  const router = useRouter();
+  const [customerId, setCustomerId] = useState(""); const [productId, setProductId] = useState(stock[0]?.productId ?? ""); const [quantity, setQuantity] = useState(""); const [unit, setUnit] = useState<WeightUnit>("KG"); const [sellingPrice, setSellingPrice] = useState(0); const [date, setDate] = useState(new Date().toISOString().slice(0, 10)); const [saving, setSaving] = useState(false);
+  const selected = stock.find((item) => item.productId === productId);
+  const submit = async (event: React.FormEvent) => { event.preventDefault(); setSaving(true); const result = await createRejectStockSaleAction({ customerId, issueDate: date, items: [{ productId, quantity: Number(quantity), unit, sellingPricePerKg: sellingPrice }] }); setSaving(false); if ("error" in result) { toast.error(`Gagal: ${result.error}`); return; } toast.success(result.message); router.push(`/invoices/${result.invoiceId}`); router.refresh(); };
+  return <form onSubmit={submit} className="erp-surface grid gap-4 p-5 md:grid-cols-2"><div className="space-y-1.5 md:col-span-2"><label className="text-xs font-semibold">Pembeli</label><select required value={customerId} onChange={(event) => setCustomerId(event.target.value)} className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"><option value="">Pilih pasar / perorangan</option>{customers.filter((customer) => customer.status === "ACTIVE").map((customer) => <option key={customer.id} value={customer.id}>{customer.name}</option>)}</select></div><div className="space-y-1.5"><label className="text-xs font-semibold">Produk reject</label><select required value={productId} onChange={(event) => setProductId(event.target.value)} className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm">{stock.map((item) => <option key={item.productId} value={item.productId}>{item.productName}{item.size ? ` [${item.size}]` : ""} · {item.quantityKg} kg</option>)}</select></div><div className="space-y-1.5"><label className="text-xs font-semibold">Tanggal invoice</label><Input required type="date" value={date} onChange={(event) => setDate(event.target.value)} className="h-10 rounded-xl" /></div><div className="space-y-1.5"><label className="text-xs font-semibold">Berat</label><Input required min="0.001" step="0.001" type="number" value={quantity} onChange={(event) => setQuantity(event.target.value)} placeholder="0" className="h-10 rounded-xl text-right tabular-nums" /><p className="text-[11px] text-muted-foreground">Stok tersedia: {selected?.quantityKg ?? 0} kg</p></div><div className="space-y-1.5"><label className="text-xs font-semibold">Satuan</label><select value={unit} onChange={(event) => setUnit(event.target.value as WeightUnit)} className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"><option value="GRAM">gram</option><option value="KG">kg</option><option value="TON">ton</option></select></div><div className="space-y-1.5"><label className="text-xs font-semibold">Harga jual / kg</label><CurrencyInput required min={0.01} value={sellingPrice} onChange={setSellingPrice} /></div><div className="flex items-end md:justify-end"><Button type="submit" disabled={saving || !stock.length} className="w-full rounded-xl md:w-auto">{saving ? <Loader2 className="mr-2 size-4 animate-spin" /> : <FileText className="mr-2 size-4" />}Buat invoice penjualan</Button></div></form>;
+}

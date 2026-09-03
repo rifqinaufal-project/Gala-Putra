@@ -1,0 +1,5 @@
+model = "gpt-5.6-sol"
+model_provider = "openagentic"
+
+model_reasoning_effort = "high"
+model_verbosity = "medium"
