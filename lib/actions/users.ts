@@ -75,3 +75,17 @@ export async function updateUserRoleAction(userId: string, role: Role) {
     return { error: normalizeActionError(error, "Gagal memperbarui role pengguna.") };
   }
 }
+
+export async function removeUserAction(userId: string) {
+  try {
+    await requireRole(["OWNER"]);
+    if (!/^[0-9a-f-]{36}$/i.test(userId)) return { error: "ID pengguna tidak valid." };
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("remove_user", { p_user_id: userId });
+    if (error) throw error;
+    revalidatePath("/settings/users");
+    return { success: true, message: "Pengguna berhasil dihapus." };
+  } catch (error) {
+    return { error: normalizeActionError(error, "Gagal menghapus pengguna.") };
+  }
+}

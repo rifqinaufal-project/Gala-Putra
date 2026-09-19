@@ -6,13 +6,19 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { deleteLoadAction } from "@/lib/actions/loads";
-import type { Load } from "@/types";
+import { deleteLoadAction, forceDeleteLoadAction } from "@/lib/actions/loads";
+import type { Load, Role } from "@/types";
 import { useState } from "react";
 
-export function LoadRowActions({ load }: { load: Load }) {
+export function LoadRowActions({ load, role }: { load: Load; role: Role }) {
   const router = useRouter();
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const canForceDelete = role === "OWNER" && load.status === "RECONCILED";
+  const destructiveNote = canForceDelete
+    ? "Muatan yang sudah direkonsiliasi akan dihapus permanen. Histori rekonsiliasi, invoice, pembayaran, dan hutang sumber ikut dihapus, tetapi saldo stok reject yang tersisa tetap dipertahankan."
+    : "Muatan yang sudah direkonsiliasi atau memiliki pembayaran tidak dapat dihapus.";
+
   return (
     <div className="flex items-center justify-end gap-1.5">
       <Link href={`/loads/${load.id}/edit`} className={buttonVariants({ variant: "outline", size: "icon-xs" })} aria-label={`Edit ${load.loadNumber}`} title="Edit muatan">
@@ -24,12 +30,19 @@ export function LoadRowActions({ load }: { load: Load }) {
       <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
-        title="Hapus muatan?"
-        description={`Muatan ${load.loadNumber}, invoice pabrik, dan hutang sumber yang belum dibayar akan dihapus.`}
-        confirmLabel="Hapus muatan"
-        note="Muatan yang sudah direkonsiliasi atau memiliki pembayaran tidak dapat dihapus."
+        title={canForceDelete ? "Hapus muatan permanen?" : "Hapus muatan?"}
+        description={
+          canForceDelete
+            ? `Muatan ${load.loadNumber}, rekonsiliasi, invoice, pembayaran, hutang sumber, serta histori reject terkait akan dihapus permanen. Saldo stok reject yang tersisa tetap dipertahankan.`
+            : `Muatan ${load.loadNumber}, invoice pabrik, dan hutang sumber yang belum dibayar akan dihapus.`
+        }
+        confirmLabel={canForceDelete ? "Hapus permanen" : "Hapus muatan"}
+        confirmationText={canForceDelete ? "HAPUS" : undefined}
+        note={destructiveNote}
         onConfirm={async () => {
-          const result = await deleteLoadAction(load.id);
+          const result = canForceDelete
+            ? await forceDeleteLoadAction(load.id)
+            : await deleteLoadAction(load.id);
           if (result.error) {
             toast.error(`Gagal: ${result.error}`);
             return;

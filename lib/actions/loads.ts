@@ -112,6 +112,24 @@ export async function deleteLoadAction(loadId: string) {
   }
 }
 
+export async function forceDeleteLoadAction(loadId: string) {
+  if (!loadId) return { error: "Muatan tidak valid." };
+  try {
+    await requireRole(["OWNER"]);
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("force_delete_load_transaction", { p_load_id: loadId });
+    if (error) throw error;
+    revalidatePath("/loads");
+    revalidatePath("/invoices");
+    revalidatePath("/reports/supplier-payables");
+    revalidatePath("/dashboard");
+    revalidatePath("/stock");
+    return { success: true, ...(data as { loadNumber: string }), message: "Muatan berhasil dihapus permanen." };
+  } catch (error) {
+    return { error: normalizeActionError(error, "Gagal menghapus muatan permanen.") };
+  }
+}
+
 export async function getLoadsAction(): Promise<Load[]> {
   await requireApprovedUser();
   const supabase = await createClient();

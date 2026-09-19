@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { formatDateShort } from "@/lib/utils";
 import { formatWeightKg, formatWeightTon } from "@/lib/domain/weights";
-import type { Load } from "@/types";
+import type { Load, Role } from "@/types";
 import { LoadRowActions } from "@/components/loads/load-row-actions";
 
 function statusLabel(status: Load["status"]) {
@@ -15,7 +15,7 @@ function statusLabel(status: Load["status"]) {
   return status;
 }
 
-export function LoadListTable({ loads }: { loads: Load[] }) {
+export function LoadListTable({ loads, role }: { loads: Load[]; role: Role }) {
   if (!loads.length) {
     return <div className="erp-surface"><EmptyState icon={ClipboardList} title="Belum ada muatan" description="Buat muatan pertama untuk mencatat ikan dari TPI sampai ke pabrik." actionLabel="Buat muatan" actionHref="/loads/new" /></div>;
   }
@@ -42,7 +42,7 @@ export function LoadListTable({ loads }: { loads: Load[] }) {
                 <td className="px-5 py-4"><p className="font-medium tabular-nums">{formatWeightKg(load.totalQuantityKg)}</p><p className="text-xs text-muted-foreground">{formatWeightTon(load.totalQuantityKg)}</p></td>
                 <td className="px-5 py-4 tabular-nums">{load.totalRejectedKg == null ? "Belum direkonsiliasi" : formatWeightKg(load.totalRejectedKg)}</td>
                 <td className="px-5 py-4"><Badge variant={load.status === "RECONCILED" ? "default" : "secondary"}>{statusLabel(load.status)}</Badge></td>
-                <td className="px-5 py-4"><div className="flex items-center justify-end gap-3"><Link href={`/loads/${load.id}`} className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Detail <ArrowUpRight className="size-3.5" /></Link><LoadRowActions load={load} /></div></td>
+                <td className="px-5 py-4"><div className="flex items-center justify-end gap-3"><Link href={`/loads/${load.id}`} className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Detail <ArrowUpRight className="size-3.5" /></Link><LoadRowActions load={load} role={role} /></div></td>
               </tr>
             ))}
           </tbody>
@@ -60,7 +60,7 @@ export function LoadListTable({ loads }: { loads: Load[] }) {
               <div><p className="text-muted-foreground">Berat terkirim</p><p className="mt-1 font-semibold tabular-nums">{formatWeightKg(load.totalQuantityKg)}</p></div>
               <div className="text-right"><p className="text-muted-foreground">Reject</p><p className="mt-1 font-semibold tabular-nums">{load.totalRejectedKg == null ? "Belum" : formatWeightKg(load.totalRejectedKg)}</p></div>
             </div>
-            <div className="flex items-center justify-between gap-3"><Link href={`/loads/${load.id}`} className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Lihat detail <ArrowUpRight className="size-3.5" /></Link><LoadRowActions load={load} /></div>
+            <div className="flex items-center justify-between gap-3"><Link href={`/loads/${load.id}`} className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Lihat detail <ArrowUpRight className="size-3.5" /></Link><LoadRowActions load={load} role={role} /></div>
           </article>
         ))}
       </div>

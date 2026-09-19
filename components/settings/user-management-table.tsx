@@ -11,10 +11,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User, Info, CheckCircle2, XCircle, X, ShieldAlert } from "lucide-react";
+import { User, Info, CheckCircle2, XCircle, X, ShieldAlert, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { approveUserAction, rejectUserAction, updateUserRoleAction, type SystemUserItem } from "@/lib/actions/users";
+import { approveUserAction, rejectUserAction, updateUserRoleAction, removeUserAction, type SystemUserItem } from "@/lib/actions/users";
 import {
   Select,
   SelectContent,
@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { Role } from "@/types";
 
 interface UserManagementTableProps {
@@ -39,6 +40,8 @@ export function UserManagementTable({ users, currentUserRole }: UserManagementTa
   const router = useRouter();
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [roleLoadingId, setRoleLoadingId] = useState<string | null>(null);
+  const [removingUser, setRemovingUser] = useState<SystemUserItem | null>(null);
+  const [removeLoading, setRemoveLoading] = useState(false);
 
   const pendingUsers = users.filter((u) => u.status === "PENDING");
   const activeUsers = users.filter((u) => u.status === "APPROVED");
@@ -80,6 +83,21 @@ export function UserManagementTable({ users, currentUserRole }: UserManagementTa
       router.refresh();
     } else {
       toast.success(res.message || `Role ${user.name} berhasil diubah.`);
+      router.refresh();
+    }
+  };
+
+  const handleRemoveUser = async () => {
+    if (!removingUser) return;
+    setRemoveLoading(true);
+    const res = await removeUserAction(removingUser.id);
+    setRemoveLoading(false);
+    setRemovingUser(null);
+    if (res.error) {
+      toast.error(`Gagal menghapus: ${res.error}`);
+      router.refresh();
+    } else {
+      toast.success(res.message || `Pengguna ${removingUser.name} berhasil dihapus.`);
       router.refresh();
     }
   };
@@ -171,6 +189,7 @@ export function UserManagementTable({ users, currentUserRole }: UserManagementTa
                 <TableHead className="text-xs font-semibold">Role Akses</TableHead>
                 <TableHead className="text-xs font-semibold">Terdaftar</TableHead>
                 <TableHead className="text-xs font-semibold text-right">Status</TableHead>
+                <TableHead className="text-xs font-semibold text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -219,6 +238,21 @@ export function UserManagementTable({ users, currentUserRole }: UserManagementTa
                       Aktif
                     </span>
                   </TableCell>
+                  <TableCell className="text-right">
+                    {isOwner && u.role !== "OWNER" ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => setRemovingUser(u)}
+                        className="text-muted-foreground hover:bg-red-50 hover:text-red-600"
+                        aria-label={`Hapus ${u.name}`}
+                        title="Hapus pengguna"
+                      >
+                        <Trash2 />
+                      </Button>
+                    ) : null}
+                  </TableCell>
                 </TableRow>
               ))}
 
@@ -244,6 +278,7 @@ export function UserManagementTable({ users, currentUserRole }: UserManagementTa
                       Ditolak
                     </span>
                   </TableCell>
+                  <TableCell className="text-right" />
                 </TableRow>
               ))}
             </TableBody>
@@ -287,11 +322,32 @@ export function UserManagementTable({ users, currentUserRole }: UserManagementTa
                   </div>
                   <div className="text-right"><p className="text-stone-500">Terdaftar</p><p className="mt-1 font-medium text-stone-800">{user.createdAt}</p></div>
                 </div>
+                {!isRejected && isOwner && user.role !== "OWNER" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setRemovingUser(user)}
+                    className="w-full text-red-600 hover:bg-red-50 hover:text-red-700"
+                  >
+                    <Trash2 className="size-3.5" /> Hapus pengguna
+                  </Button>
+                )}
               </article>
             );
           })}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={!!removingUser}
+        onOpenChange={(open) => { if (!open && !removeLoading) setRemovingUser(null); }}
+        title="Hapus pengguna?"
+        description={`Akun ${removingUser?.name ?? ""} (${removingUser?.email ?? ""}) akan dihapus permanen dari sistem.`}
+        confirmLabel={removeLoading ? "Menghapus..." : "Ya, Hapus Pengguna"}
+        note="Riwayat data operasional tetap tersimpan, namun tautan ke akun ini akan diputus. Tindakan ini tidak dapat dibatalkan."
+        onConfirm={handleRemoveUser}
+      />
     </div>
   );
 }
