@@ -25,7 +25,7 @@ export async function toggleSupplierStatusAction(id: string, currentStatus: Supp
   catch (error) { return { error: normalizeActionError(error, "Gagal mengubah status supplier.") }; }
 }
 export async function deleteSupplierAction(id: string) {
-  try { await requireRole(["OWNER", "FINANCE"]); const supabase = await createClient(); const { count, error: countError } = await supabase.from("product_costs").select("id", { count: "exact", head: true }).eq("supplier_id", id); if (countError) throw countError; if ((count ?? 0) > 0) { const { error } = await supabase.from("suppliers").update({ status: "INACTIVE" }).eq("id", id); if (error) throw error; revalidatePath("/suppliers"); return { success: true, isWarning: true, message: "Supplier memiliki riwayat HPP dan dinonaktifkan tanpa menghapus histori." }; } const { error } = await supabase.from("suppliers").delete().eq("id", id); if (error) throw error; revalidatePath("/suppliers"); return { success: true, isWarning: false, message: "Supplier berhasil dihapus." }; }
+  try { await requireRole(["OWNER"]); const supabase = await createClient(); const { data, error } = await supabase.rpc("force_delete_supplier", { p_supplier_id: id }); if (error) throw error; revalidatePath("/suppliers"); revalidatePath("/stock"); revalidatePath("/loads"); revalidatePath("/reports/supplier-payables"); revalidatePath("/dashboard"); return { success: true, ...(data as { name: string }), message: "Supplier berhasil dihapus beserta data terkait." }; }
   catch (error) { return { error: normalizeActionError(error, "Gagal menghapus supplier.") }; }
 }
 export async function getSuppliersAction() {

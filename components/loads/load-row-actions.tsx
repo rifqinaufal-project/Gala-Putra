@@ -37,7 +37,6 @@ export function LoadRowActions({ load, role }: { load: Load; role: Role }) {
             : `Muatan ${load.loadNumber}, invoice pabrik, dan hutang sumber yang belum dibayar akan dihapus.`
         }
         confirmLabel={canForceDelete ? "Hapus permanen" : "Hapus muatan"}
-        confirmationText={canForceDelete ? "HAPUS" : undefined}
         note={destructiveNote}
         onConfirm={async () => {
           const result = canForceDelete

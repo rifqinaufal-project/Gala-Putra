@@ -42,15 +42,14 @@ export async function toggleCustomerStatusAction(id: string, currentStatus: Cust
 
 export async function deleteCustomerAction(id: string) {
   try {
-    await requireRole(["OWNER", "FINANCE"]); const supabase = await createClient();
-    const { count, error: countError } = await supabase.from("invoices").select("id", { count: "exact", head: true }).eq("customer_id", id); if (countError) throw countError;
-    if ((count ?? 0) > 0) {
-      const { error } = await supabase.from("customers").update({ status: "INACTIVE" }).eq("id", id); if (error) throw error;
-      revalidatePath("/customers"); return { success: true, isWarning: true, message: "Restoran memiliki riwayat invoice dan dinonaktifkan tanpa menghapus histori." };
-    }
-    const { error: priceError } = await supabase.from("customer_prices").delete().eq("customer_id", id); if (priceError) throw priceError;
-    const { error } = await supabase.from("customers").delete().eq("id", id); if (error) throw error;
-    revalidatePath("/customers"); return { success: true, message: "Restoran berhasil dihapus." };
+    await requireRole(["OWNER"]); const supabase = await createClient();
+    const { data, error } = await supabase.rpc("force_delete_customer", { p_customer_id: id });
+    if (error) throw error;
+    revalidatePath("/customers");
+    revalidatePath("/invoices");
+    revalidatePath("/loads");
+    revalidatePath("/dashboard");
+    return { success: true, ...(data as { name: string }), message: "Restoran berhasil dihapus beserta data terkait." };
   } catch (error) { return { error: normalizeActionError(error, "Gagal menghapus restoran.") }; }
 }
 

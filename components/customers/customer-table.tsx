@@ -545,7 +545,7 @@ export function CustomerTable({ customers, canManage = false }: CustomerTablePro
             if (!open) setDeletingCustomer(null);
           }}
           title="Hapus Restoran?"
-          description={`Apakah Anda yakin ingin menghapus data restoran "${deletingCustomer.name}"?`}
+          description={`Hapus permanen "${deletingCustomer.name}" beserta seluruh invoice, muatan, dan pembayaran terkait? Tindakan ini tidak dapat dibatalkan.`}
           confirmLabel="Hapus Restoran"
           onConfirm={handleConfirmDelete}
         />

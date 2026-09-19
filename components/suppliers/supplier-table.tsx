@@ -234,7 +234,7 @@ export function SupplierTable({ suppliers, canManage = false }: SupplierTablePro
             if (!open) setDeletingSupplier(null);
           }}
           title="Hapus Supplier?"
-          description={`Apakah Anda yakin ingin menghapus data supplier "${deletingSupplier.name}"?`}
+          description={`Hapus permanen "${deletingSupplier.name}" beserta seluruh tagihan, penerimaan stok, dan muatan terkait? Tindakan ini tidak dapat dibatalkan.`}
           confirmLabel="Hapus Supplier"
           onConfirm={handleConfirmDelete}
         />
