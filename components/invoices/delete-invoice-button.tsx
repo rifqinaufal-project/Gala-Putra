@@ -37,7 +37,7 @@ export function DeleteInvoiceButton({ invoiceId, invoiceNumber, status, customer
   const isDraft = status === "DRAFT";
   const description = isDraft
     ? `Hapus draft invoice untuk ${customerName}? Tindakan ini tidak dapat dibatalkan.`
-    : `Hapus invoice ${invoiceNumber ?? ""} (${customerName})? Stok akan dikembalikan, semua pembayaran akan dihapus, dan statistik akan diperbarui. Tindakan ini tidak dapat dibatalkan.`;
+    : `Hapus invoice ${invoiceNumber ?? ""} (${customerName})? Semua pembayaran terkait akan dihapus dan statistik diperbarui. Tindakan ini tidak dapat dibatalkan.`;
 
   return (
     <>

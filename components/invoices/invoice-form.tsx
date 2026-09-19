@@ -637,7 +637,7 @@ export function InvoiceForm({ customers = [], products = [], customerPrices = []
                               .filter((p) => p.status === "ACTIVE")
                               .map((p) => (
                                 <SelectItem key={p.id} value={p.id}>
-                                  {p.name} {p.size ? `[${p.size}]` : ""} · stok {p.stockQuantity ?? 0} {p.defaultUnit}
+                                  {p.name} {p.size ? `[${p.size}]` : ""}
                                 </SelectItem>
                               ))}
                           </SelectContent>
@@ -731,7 +731,7 @@ export function InvoiceForm({ customers = [], products = [], customerPrices = []
                         <SelectContent>
                           {productsList.filter((product) => product.status === "ACTIVE").map((product) => (
                             <SelectItem key={product.id} value={product.id}>
-                              {product.name} {product.size ? `[${product.size}]` : ""} · stok {product.stockQuantity ?? 0} {product.defaultUnit}
+                              {product.name} {product.size ? `[${product.size}]` : ""}
                             </SelectItem>
                           ))}
                         </SelectContent>

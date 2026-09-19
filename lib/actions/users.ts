@@ -57,3 +57,21 @@ export async function approveUserAction(userId: string, role: Role = "STAFF") {
 export async function rejectUserAction(userId: string) {
   return setApproval(userId, "REJECTED");
 }
+
+export async function updateUserRoleAction(userId: string, role: Role) {
+  try {
+    await requireRole(["OWNER"]);
+    if (!/^[0-9a-f-]{36}$/i.test(userId)) return { error: "ID pengguna tidak valid." };
+    if (!["OWNER", "FINANCE", "STAFF"].includes(role)) return { error: "Role tidak valid." };
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("update_user_role", {
+      p_user_id: userId,
+      p_role: role,
+    });
+    if (error) throw error;
+    revalidatePath("/settings/users");
+    return { success: true, message: "Role pengguna berhasil diperbarui." };
+  } catch (error) {
+    return { error: normalizeActionError(error, "Gagal memperbarui role pengguna.") };
+  }
+}

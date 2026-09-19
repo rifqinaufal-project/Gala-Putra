@@ -14,7 +14,14 @@ import {
 import { User, Info, CheckCircle2, XCircle, X, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { approveUserAction, rejectUserAction, type SystemUserItem } from "@/lib/actions/users";
+import { approveUserAction, rejectUserAction, updateUserRoleAction, type SystemUserItem } from "@/lib/actions/users";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Role } from "@/types";
 
 interface UserManagementTableProps {
@@ -31,6 +38,7 @@ const roleLabel: Record<string, string> = {
 export function UserManagementTable({ users, currentUserRole }: UserManagementTableProps) {
   const router = useRouter();
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [roleLoadingId, setRoleLoadingId] = useState<string | null>(null);
 
   const pendingUsers = users.filter((u) => u.status === "PENDING");
   const activeUsers = users.filter((u) => u.status === "APPROVED");
@@ -58,6 +66,20 @@ export function UserManagementTable({ users, currentUserRole }: UserManagementTa
       toast.error(`Gagal menolak: ${res.error}`);
     } else {
       toast.info(res.message || `Pendaftaran ${user.name} telah ditolak.`);
+      router.refresh();
+    }
+  };
+
+  const handleRoleChange = async (user: SystemUserItem, role: Role) => {
+    if (role === user.role) return;
+    setRoleLoadingId(user.id);
+    const res = await updateUserRoleAction(user.id, role);
+    setRoleLoadingId(null);
+    if (res.error) {
+      toast.error(`Gagal mengubah role: ${res.error}`);
+      router.refresh();
+    } else {
+      toast.success(res.message || `Role ${user.name} berhasil diubah.`);
       router.refresh();
     }
   };
@@ -161,16 +183,32 @@ export function UserManagementTable({ users, currentUserRole }: UserManagementTa
                     {u.email}
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={
-                        u.role === "OWNER"
-                          ? "border border-neutral-300 bg-neutral-100 text-neutral-900 text-xs"
-                          : "bg-slate-100 text-slate-700 text-xs"
-                      }
-                    >
-                      {roleLabel[u.role] || u.role}
-                    </Badge>
+                    {isOwner && u.role !== "OWNER" ? (
+                      <Select
+                        value={u.role}
+                        onValueChange={(v) => handleRoleChange(u, (v as Role) || u.role)}
+                        disabled={roleLoadingId === u.id}
+                      >
+                        <SelectTrigger size="sm" className="text-xs">
+                          <SelectValue>{roleLabel[u.role] || u.role}</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="STAFF">Staff Operasional</SelectItem>
+                          <SelectItem value="FINANCE">Admin & Keuangan</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Badge
+                        variant="secondary"
+                        className={
+                          u.role === "OWNER"
+                            ? "border border-neutral-300 bg-neutral-100 text-neutral-900 text-xs"
+                            : "bg-slate-100 text-slate-700 text-xs"
+                        }
+                      >
+                        {roleLabel[u.role] || u.role}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {u.createdAt}
@@ -226,7 +264,27 @@ export function UserManagementTable({ users, currentUserRole }: UserManagementTa
                   </span>
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-stone-50 p-3 text-xs">
-                  <div><p className="text-stone-500">Role akses</p><p className="mt-1 font-medium text-stone-800">{roleLabel[user.role] || user.role}</p></div>
+                  <div><p className="text-stone-500">Role akses</p>
+                    {!isRejected && isOwner && user.role !== "OWNER" ? (
+                      <div className="mt-1">
+                        <Select
+                          value={user.role}
+                          onValueChange={(v) => handleRoleChange(user, (v as Role) || user.role)}
+                          disabled={roleLoadingId === user.id}
+                        >
+                          <SelectTrigger size="sm" className="text-xs">
+                            <SelectValue>{roleLabel[user.role] || user.role}</SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="STAFF">Staff Operasional</SelectItem>
+                            <SelectItem value="FINANCE">Admin & Keuangan</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : (
+                      <p className="mt-1 font-medium text-stone-800">{roleLabel[user.role] || user.role}</p>
+                    )}
+                  </div>
                   <div className="text-right"><p className="text-stone-500">Terdaftar</p><p className="mt-1 font-medium text-stone-800">{user.createdAt}</p></div>
                 </div>
               </article>
