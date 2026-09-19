@@ -71,7 +71,7 @@ const settingItems = [
 
 function canAccess(href: string, role: Role) {
   if (role === "OWNER") return true;
-  if (role === "FINANCE") return !href.startsWith("/settings/");
+  if (role === "FINANCE") return href === "/settings/company" || !href.startsWith("/settings/");
   return ["/dashboard", "/invoices", "/customers", "/suppliers"].includes(href);
 }
 

@@ -180,7 +180,7 @@ export function InvoiceListTable({ initialInvoices = [], role, company }: Invoic
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        {role === "OWNER" && inv.status !== "VOID" && inv.status !== "DRAFT" && inv.totalPaid === 0 && (
+        {(role === "OWNER" || role === "FINANCE") && inv.status !== "VOID" && inv.status !== "DRAFT" && inv.totalPaid === 0 && (
           <DropdownMenuItem className="cursor-pointer text-amber-600 focus:text-amber-600" onClick={() => setVoidingInvoice(inv)}>
             <Ban className="mr-2 h-3.5 w-3.5 text-amber-600" /> Batalkan Invoice
           </DropdownMenuItem>

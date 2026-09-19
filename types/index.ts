@@ -542,6 +542,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "manage_selling_price",
     "create_invoice_draft",
     "issue_invoice",
+    "void_invoice",
     "record_payment",
   ],
   STAFF: ["create_invoice_draft"],
