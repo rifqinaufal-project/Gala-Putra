@@ -12,7 +12,6 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
-  Package,
   PanelLeftClose,
   PanelLeftOpen,
   Receipt,
@@ -73,7 +72,7 @@ const settingItems = [
 function canAccess(href: string, role: Role) {
   if (role === "OWNER") return true;
   if (role === "FINANCE") return !href.startsWith("/settings/");
-  return ["/dashboard", "/invoices", "/customers", "/suppliers", "/loads"].includes(href);
+  return ["/dashboard", "/invoices", "/customers", "/suppliers"].includes(href);
 }
 
 function isActivePath(pathname: string, href: string) {
@@ -320,7 +319,7 @@ export function MobileBottomNav({ role, onMenuOpen }: { role: Role; onMenuOpen: 
     ? [
         { label: "Beranda", href: "/dashboard", icon: LayoutDashboard },
         { label: "Invoice", href: "/invoices", icon: FileText },
-        { label: "Produk", href: "/products", icon: Package },
+        { label: "TPI & Sumber", href: "/suppliers", icon: Truck },
         { label: "Restoran", href: "/customers", icon: UtensilsCrossed },
       ]
     : [
