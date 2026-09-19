@@ -43,6 +43,11 @@ BEGIN
   JOIN public.stock_receipts receipt ON receipt.id = receipt_item.receipt_id
   WHERE receipt_item.product_id = p_product_id;
 
+  -- Reject stock references the product with RESTRICT.
+  DELETE FROM public.reject_stock_movements WHERE product_id = p_product_id;
+  DELETE FROM public.reject_stock_lots WHERE product_id = p_product_id;
+  DELETE FROM public.reject_stock_balances WHERE product_id = p_product_id;
+
   DELETE FROM public.stock_batch_allocations allocation
   USING public.stock_batches batch
   WHERE allocation.batch_id = batch.id AND batch.product_id = p_product_id;
