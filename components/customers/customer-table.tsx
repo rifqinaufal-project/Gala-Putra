@@ -115,13 +115,8 @@ export function CustomerTable({ customers, canManage = false }: CustomerTablePro
       // Revert optimistic update
       setCustomersList(customers);
     } else {
-      if (res.isWarning) {
-        toast.warning(res.message);
-        router.refresh();
-      } else {
-        toast.success(res.message || "Restoran berhasil dihapus");
-        router.refresh();
-      }
+      toast.success(res.message || "Restoran berhasil dihapus");
+      router.refresh();
     }
   };
 

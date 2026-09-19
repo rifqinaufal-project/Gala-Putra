@@ -68,12 +68,7 @@ export function SupplierTable({ suppliers, canManage = false }: SupplierTablePro
       setSuppliersList(suppliers);
     } else {
       toast.success(res.message || "Supplier berhasil dihapus");
-      if (res.isWarning) {
-        // If warning, status was changed instead of deleted, so we should refresh
-        router.refresh();
-      } else {
-        router.refresh();
-      }
+      router.refresh();
     }
   };
 
